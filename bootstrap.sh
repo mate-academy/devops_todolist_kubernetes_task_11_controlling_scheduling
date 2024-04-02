@@ -25,6 +25,6 @@ kubectl apply -f .infrastructure/app/deployment.yml
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 
 # Uncomment and apply the Ingress configuration if needed
-kubectl apply -f .infrastructure/ingress/ingress.yml
+# kubectl apply -f .infrastructure/ingress/ingress.yml
 
 echo "Deployment scripts executed successfully."
