@@ -53,7 +53,7 @@ $kubectl describe nodes
 
 ## Tained Nodes, where app=mysql:
 $kubectl get nodes -o jsonpath="{range .items[*]}{.metadata.name} {.spec.taints[]}{\"\n\"}"
-$kubectl taint nodes kind-worker kind-worker2 app=mysql:NoSchedule
+$kubectl taint nodes -l app=mysql app=mysql:NoSchedule
 $kubectl get nodes -o jsonpath="{range .items[*]}{.metadata.name} {.spec.taints[]}{\"\n\"}"
 
 ## Run bootstrap.sh:

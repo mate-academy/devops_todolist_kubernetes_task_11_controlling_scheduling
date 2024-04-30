@@ -23,7 +23,7 @@ spec:
           - preference:
               matchExpressions:
               - key: "app"
-                operator: "In"
+                operator: In
                 values: ["todoapp"]
             weight: 1
         podAntiAffinity:
@@ -31,7 +31,7 @@ spec:
           - labelSelector:
               matchExpressions:
               - key: "app"
-                operator: "In"
+                operator: In
                 values: ["todoapp"]
             topologyKey: "kubernetes.io/hostname"
       containers:
