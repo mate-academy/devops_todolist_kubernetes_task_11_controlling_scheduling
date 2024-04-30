@@ -4,16 +4,38 @@ metadata:
   name: mysql
   namespace: mysql
 spec:
+  replicas: 2
+  serviceName: mysql
   selector:
     matchLabels:
       app: mysql
-  replicas: 2
-  serviceName: mysql
   template:
     metadata:
       labels:
         app: mysql
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: "In"
+                values: ["mysql"]
+            topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: "app"
+                operator: "In"
+                values: ["mysql"]
+            weight: 1
+      tolerations:
+      - key: "app"
+        operator: "Equal"
+        value: "mysql"
+        effect: "NoSchedule"
       containers:
       - name: mysql
         image: mysql:8.0
@@ -60,10 +82,6 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 2
           timeoutSeconds: 1
-      volumes:
-      - name: config-map
-        configMap:
-          name: mysql
   volumeClaimTemplates:
   - metadata:
       name: data
