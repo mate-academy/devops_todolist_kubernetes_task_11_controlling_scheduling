@@ -46,9 +46,8 @@ Create a kubernetes manifest for a pod which will containa ToDo app container:
 1. `README.md` should have instructuions on how to validate the changes
 1. Create PR with your changes and attach it for validation on a platform.
 
-First, you need to create the cluster
-kind create cluster cluster.yml
-Then, start the bootstrap.sh
+
+Start the bootstrap.sh
 The application will be available by the next URL:
 http://localhost:30007 - through Nodeport Service
 http://localhost - through ingres controller
