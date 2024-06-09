@@ -3,6 +3,8 @@ kind: StatefulSet
 metadata:
   name: mysql
   namespace: mysql
+  labels:
+    app: mysql
 spec:
   selector:
     matchLabels:
@@ -64,6 +66,15 @@ spec:
       - name: config-map
         configMap:
           name: mysql
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - "mysql"
   volumeClaimTemplates:
   - metadata:
       name: data
