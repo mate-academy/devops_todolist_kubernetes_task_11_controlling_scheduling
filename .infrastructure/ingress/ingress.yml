@@ -4,15 +4,19 @@ metadata:
   name: todoapp-ingress
   namespace: todoapp
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
   - http:
       paths:
       - pathType: Prefix
-        path: /(|$)(.*)
+        path: /
         backend:
           service:
             name: todoapp-service
             port:
               number: 80
+# !! без виправлення не створюється
+# а саме 
+# Error from server (InternalError): error when creating ".infrastructure/ingress/ingress.yml": Internal error occurred: failed calling webhook "validate.nginx.ingress.kubernetes.io": failed to call webhook: Post "https://ingress-nginx-controller-admission.ingress-nginx.svc:443/networking/v1/ingresses?timeout=10s": dial tcp 10.96.99.65:443: connect: connection refused
+# we have full access to all features of our app on http://localhost/

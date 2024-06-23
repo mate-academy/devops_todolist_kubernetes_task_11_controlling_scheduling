@@ -91,3 +91,24 @@ spec:
       - name: app-config-volume
         configMap:
           name: app-config
+      affinity:
+        # pods controlled by this deployment are preferred to be scheduled on the nodes with following labels:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - todoapp 
+        # pods controlled by this deployment can not be scheduled on the nodes that already have pods with following labels:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - todoapp 
+            topologyKey: "kubernetes.io/hostname"
