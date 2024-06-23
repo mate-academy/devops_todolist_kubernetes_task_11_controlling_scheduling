@@ -64,6 +64,32 @@ spec:
       - name: config-map
         configMap:
           name: mysql
+      tolerations:
+      # pods controlled by this statefulSet can be scheduled on the nodes with the following taint:
+      - key: "app"
+        operator: "Equal"
+        value: "mysql"
+        effect: "NoSchedule"
+      affinity: 
+        # pods controlled by this statefulSet can not be scheduled on the nodes that already have pods with following labels:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - mysql
+            topologyKey: "kubernetes.io/hostname"
+        # pods controlled by this statefulSet can be scheduled only on the nodes with following labels:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - mysql
   volumeClaimTemplates:
   - metadata:
       name: data
