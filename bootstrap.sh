@@ -1,4 +1,5 @@
 #!/bin/bash
+kind create cluster --config .infrastructure/app/cluster.yml
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml
@@ -14,7 +15,9 @@ kubectl apply -f .infrastructure/app/clusterIp.yml
 kubectl apply -f .infrastructure/app/nodeport.yml
 kubectl apply -f .infrastructure/app/hpa.yml
 kubectl apply -f .infrastructure/app/deployment.yml
+kubectl taint nodes kind-worker kind-worker2 app=mysql:NoSchedule
+kubectl label nodes kind-worker kind-worker2 app=mysql
 
 # Install Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+kubectl apply -f .infrastructure/ingress/ingress.yml
