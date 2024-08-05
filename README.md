@@ -3,7 +3,7 @@
 This is a todo list web application with basic features of most web apps, i.e., accounts/login, API, and interactive UI. To do this task, you will need:
 
 - CSS | [Skeleton](http://getskeleton.com/)
-- JS  | [jQuery](https://jquery.com/)
+- JS | [jQuery](https://jquery.com/)
 
 ## Explore
 
@@ -36,12 +36,25 @@ Create a kubernetes manifest for a pod which will containa ToDo app container:
 1. Inspect Nodes for Labels and Taints
 1. Taint nodes labeled with `app=mysql` with `app=mysql:NoSchedule`
 1. StateFulSet requirements:
-    1. Modify StatefulSet so it can be scheduled on the tainted worder nodes
-    1. Add Pod Anti-Affinity rule so mysql could not be scheduled on the same node
-    1. Add Node Affinity rule so mysql scheduled on a node with `app=mysql` label
+   1. Modify StatefulSet so it can be scheduled on the tainted worker nodes
+   1. Add Pod Anti-Affinity rule so mysql could not be scheduled on the same node
+   1. Add Node Affinity rule so mysql scheduled on a node with `app=mysql` label
 1. Deployment requirements:
-    1. Add Node Affinity Rules to schedule deployment on a `app=todoapp` labeled nodes (Use `PreferedDuringSchedulingIgnoredDuringExecution`)
-    1. Add Pod Anti-Affinity rule so deployment could not be scheduled on the same node
+   1. Add Node Affinity Rules to schedule deployment on a `app=todoapp` labeled nodes (Use `PreferedDuringSchedulingIgnoredDuringExecution`)
+   1. Add Pod Anti-Affinity rule so deployment could not be scheduled on the same node
 1. `bootstrap.sh` should containe all the commands to deploy all the required resources in the cluster
 1. `README.md` should have instructuions on how to validate the changes
 1. Create PR with your changes and attach it for validation on a platform.
+
+run this command to check the taints on nodes `kubectl get nodes -o jsonpath="{range .items[*]}{.metadata.name} {.spec.taints[]}{\"\n\"}"`
+output should be something like this :
+
+```
+kind-control-plane {"effect":"NoSchedule","key":"node-role.kubernetes.io/control-plane"}
+kind-worker {"effect":"NoSchedule","key":"app","value":"mysql"}
+kind-worker2 {"effect":"NoSchedule","key":"app","value":"mysql"}
+```
+
+check labels for nodes : `kubectl get nodes --show-labels`
+
+check the pods : `kubectl get pods -n mysql -o wide` and `kubectl get pods -n todoapp -o wide` # поди з тудуапп не повинні запускатись через тейнт `app=mysql:NoSchedule`, так?
