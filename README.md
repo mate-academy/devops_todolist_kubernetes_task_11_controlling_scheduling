@@ -45,3 +45,13 @@ Create a kubernetes manifest for a pod which will containa ToDo app container:
 1. `bootstrap.sh` should containe all the commands to deploy all the required resources in the cluster
 1. `README.md` should have instructuions on how to validate the changes
 1. Create PR with your changes and attach it for validation on a platform.
+
+To validate the changes use next command:
+
+    kubectl get pods -o wide -n mysql
+
+in result you can see that pod mysql run in nodes with mysql label, each in different nodes.
+
+    kubectl get pods -o wide -n todoapp
+
+and  also just for pods todoapp
