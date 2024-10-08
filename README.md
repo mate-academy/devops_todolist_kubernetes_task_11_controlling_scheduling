@@ -44,4 +44,15 @@ Create a kubernetes manifest for a pod which will containa ToDo app container:
     1. Add Pod Anti-Affinity rule so deployment could not be scheduled on the same node
 1. `bootstrap.sh` should containe all the commands to deploy all the required resources in the cluster
 1. `README.md` should have instructuions on how to validate the changes
+
+Run the commands below and check if on pods are running on appropriate nodes:
+
+```
+kubectl get pods -o wide -n mysql
+```
+
+```
+kubectl get pods -o wide -n todoapp
+```
+
 1. Create PR with your changes and attach it for validation on a platform.
