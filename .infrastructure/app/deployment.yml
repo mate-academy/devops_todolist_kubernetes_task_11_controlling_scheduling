@@ -95,7 +95,7 @@ spec:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-              - matchExpression:
+              - matchExpressions:
                   - key: "app"
                     operator: In
                     values:
