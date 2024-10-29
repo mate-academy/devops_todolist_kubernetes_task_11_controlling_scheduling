@@ -21,7 +21,12 @@ spec:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
-                matchLabels:
+                 matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - "todoapp"
+              topologyKey: "kubernetes.io/hostname"
                   app: todoapp
               topologyKey: "kubernetes.io/hostname"
         nodeAffinity:
