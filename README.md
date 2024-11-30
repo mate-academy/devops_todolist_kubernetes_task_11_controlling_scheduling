@@ -48,6 +48,15 @@ Create a Kubernetes manifest for a pod which will contain a ToDo app container:
 
 
 # -------------------------
+
+# Create cluster:
+
+kind create cluster --config-cluster.yml
+
+# Run file
+
+.bootstrap.sh
+
 # Lists all pods belonging to namespace mysql in rich format.
 kubectl get pods -o wide mysql
 

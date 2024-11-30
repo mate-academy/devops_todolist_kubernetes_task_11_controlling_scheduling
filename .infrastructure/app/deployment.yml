@@ -109,3 +109,8 @@ spec:
                     values:
                       - todoapp
               topologyKey: "kubernetes.io/hostname"
+        tolerations:
+          - key: "app"
+            operator: "Equal"
+            value: "mysql"
+            effect: "NoSchedule"
