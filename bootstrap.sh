@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Taint nodes labeled with app=mysql with app=mysql:NoSchedule
+kubectl taint nodes -1 app=mysql:NoSchedule
+
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml

@@ -64,6 +64,29 @@ spec:
       - name: config-map
         configMap:
           name: mysql
+      tolerations:
+        - key: "app"
+          operator: "Equal"
+          value: "mysql"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          preferedDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "app"
+                    operator: In
+                    value:
+                      - "mysql"
+        podAntiAffinity:
+          preferedDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - mysql
+              topologyKey: "kubernetes.io/hostname"
   volumeClaimTemplates:
   - metadata:
       name: data
