@@ -1,15 +1,17 @@
-# this config file contains all config fields with comments
-# NOTE: this is not a particularly useful config file
+# Cluster Configuration for Kubernetes using KIND (Kind IN Docker)
 apiVersion: kind.x-k8s.io/v1alpha4
 kind: Cluster
-# patch the generated kubeadm config with some extra settings
+
+# Kubeadm configuration patches
+# These patches add additional settings to the generated kubeadm config.
 kubeadmConfigPatches:
 - |
   apiVersion: kubelet.config.k8s.io/v1beta1
   kind: KubeletConfiguration
   evictionHard:
-    nodefs.available: "0%"
-# patch it further using a JSON 6902 patch
+    nodefs.available: "0%"  # Evict pods when disk usage reaches 100%
+
+# Further patching using JSON 6902 to update API server SANs (Subject Alternative Names)
 kubeadmConfigPatchesJSON6902:
 - group: kubeadm.k8s.io
   version: v1beta3
@@ -17,63 +19,53 @@ kubeadmConfigPatchesJSON6902:
   patch: |
     - op: add
       path: /apiServer/certSANs/-
-      value: my-hostname
-# 2 control plane node and 2 workers
+      value: my-hostname  # Add the SAN for API server certificate
+
+# Nodes configuration
 nodes:
-# the control plane node config
-- role: control-plane
-  extraMounts:
-    - hostPath: /tmp
-      containerPath: /data
-  kubeadmConfigPatches:
-  - |
-    kind: InitConfiguration
-    nodeRegistration:
-      kubeletExtraArgs:
-        node-labels: "ingress-ready=true"
-  extraPortMappings:
-  - containerPort: 30007
-    hostPort: 30007
-  - containerPort: 30008
-    hostPort: 30008
-  - containerPort: 80
-    hostPort: 80
-    protocol: TCP
-  - containerPort: 443
-    hostPort: 443
-    protocol: TCP
-# the two workers
-- role: worker
-  extraMounts:
-    - hostPath: /tmp
-      containerPath: /data
-  labels:
-    app: mysql
-- role: worker
-  extraMounts:
-    - hostPath: /tmp
-      containerPath: /data
-  labels:
-    app: mysql
-- role: worker
-  extraMounts:
-    - hostPath: /tmp
-      containerPath: /data
-  labels:
-    app: todoapp
-- role: worker
-  extraMounts:
-    - hostPath: /tmp
-      containerPath: /data
-  labels:
-    app: todoapp
-- role: worker
-  extraMounts:
-    - hostPath: /tmp
-      containerPath: /data
-  labels:
-    app: todoapp
-- role: worker
-  extraMounts:
-    - hostPath: /tmp
-      containerPath: /data
+  # Control Plane Node Configuration
+  - role: control-plane
+    extraMounts:
+      - hostPath: /tmp  # Mount the host's /tmp directory to /data inside the container
+        containerPath: /data
+    kubeadmConfigPatches:
+    - |
+      kind: InitConfiguration
+      nodeRegistration:
+        kubeletExtraArgs:
+          node-labels: "ingress-ready=true"  # Label the control plane node as ingress-ready
+    extraPortMappings:
+      - containerPort: 30007
+        hostPort: 30007
+      - containerPort: 30008
+        hostPort: 30008
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+      - containerPort: 443
+        hostPort: 443
+        protocol: TCP
+
+  # Worker Node Configuration for MySQL app
+  - role: worker
+    extraMounts:
+      - hostPath: /tmp  # Mount the host's /tmp directory to /data inside the container
+        containerPath: /data
+    labels:
+      app: mysql  # Label the node for MySQL app
+
+  # Worker Node Configuration for TodoApp app
+  - role: worker
+    extraMounts:
+      - hostPath: /tmp  # Mount the host's /tmp directory to /data inside the container
+        containerPath: /data
+    labels:
+      app: todoapp  # Label the node for TodoApp app
+
+  # Additional Worker Nodes for TodoApp
+  - role: worker
+    extraMounts:
+      - hostPath: /tmp  # Mount the host's /tmp directory to /data inside the container
+        containerPath: /data
+    labels:
+      app: todoapp  # Label the node for TodoApp app
