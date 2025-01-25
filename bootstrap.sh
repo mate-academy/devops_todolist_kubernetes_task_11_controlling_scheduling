@@ -1,4 +1,10 @@
 #!/bin/bash
+kind create cluster --config cluster.yml
+kubectl label nodes mysql-node app=mysql
+kubectl taint nodes mysql-node app=mysql:NoSchedule
+
+kubectl label nodes todoapp-node app=todoapp
+
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml
