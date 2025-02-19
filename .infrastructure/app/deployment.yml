@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: todoapp
   namespace: todoapp
+  labels:
+    app: todoapp
 spec:
   strategy:
     type: RollingUpdate
@@ -17,9 +19,34 @@ spec:
       labels:
         app: todoapp
     spec:
+      tolerations:
+      - key: "app"
+        operator: "Equal"
+        value: "todoapp"
+        effect: "NoSchedule"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - "mysql"
+              topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                - key: "util"
+                  operator: In
+                  values:
+                    - "todoapp"
       containers:
       - name: todoapp
         image: ikulyk404/todoapp:4.0.1
+        imagePullPolicy: Always
         volumeMounts:
         - name: data
           mountPath: /app/data
@@ -32,10 +59,10 @@ spec:
         resources:
           requests:
             memory: "256Mi"
-            cpu: "150m"
+            cpu: "300m"
           limits:
             memory: "256Mi"
-            cpu: "150m"
+            cpu: "300m"
         env:
         - name: PYTHONUNBUFFERED
           valueFrom:
@@ -73,7 +100,7 @@ spec:
           httpGet:
             path: api/health
             port: 8080
-          initialDelaySeconds: 60
+          initialDelaySeconds: 80
           periodSeconds: 5
         readinessProbe:
           httpGet:
