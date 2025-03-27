@@ -81,6 +81,21 @@ spec:
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 5
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                  topologyKey: "kubernetes.io/hostname"
+              weight: 10
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - "todoapp"
+              weight: 20
       volumes:
       - name: data
         persistentVolumeClaim:
