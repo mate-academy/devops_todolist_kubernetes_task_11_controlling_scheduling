@@ -91,3 +91,26 @@ spec:
       - name: app-config-volume
         configMap:
           name: app-config
+      tolerations:
+      - key: "mysql"
+        operator: "Equal"
+        value: "todoapp"
+        effect: "NoSchedule"
+      affinity:
+        nodeAntiAffinity:
+          preferedDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                    - "todoapp"
+            topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          preferedDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - "todoapp"
