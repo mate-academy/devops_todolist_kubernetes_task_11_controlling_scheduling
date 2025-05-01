@@ -18,3 +18,13 @@ kubectl apply -f .infrastructure/app/deployment.yml
 # Install Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 # kubectl apply -f .infrastructure/ingress/ingress.yml
+
+#!/bin/bash
+
+# Create namespace if needed
+kubectl create namespace todoapp || true
+
+# Apply manifests
+kubectl apply -f k8s/mysql-statefulset.yaml
+kubectl apply -f k8s/todoapp-deployment.yaml
+kubectl apply -f k8s/ingress.yml

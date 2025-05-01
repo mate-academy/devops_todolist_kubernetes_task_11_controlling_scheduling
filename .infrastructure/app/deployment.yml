@@ -36,6 +36,25 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "150m"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - todoapp
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - todoapp
+              topologyKey: "kubernetes.io/hostname"
         env:
         - name: PYTHONUNBUFFERED
           valueFrom:
