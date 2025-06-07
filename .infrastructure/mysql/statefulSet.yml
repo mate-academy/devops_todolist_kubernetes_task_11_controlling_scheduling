@@ -30,7 +30,7 @@ spec:
                 - key: app
                   operator: In
                   values:
-                    - mysql-app
+                    - mysql
               topologyKey: "kubernetes.io/hostname"
                 
       tolerations:
