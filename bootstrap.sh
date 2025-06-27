@@ -7,7 +7,6 @@ kubectl apply -f .infrastructure/mysql/service.yml
 
 # Apply taint to MySQL nodes
 kubectl taint nodes kind-worker app=mysql:NoSchedule --overwrite
-kubectl taint nodes kind-worker2 app=mysql:NoSchedule --overwrite
 
 kubectl apply -f .infrastructure/mysql/statefulSet.yml
 
