@@ -1,20 +1,32 @@
 #!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
+set -e
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+echo "⏳ Creating KIND cluster..."
+kind create cluster --config cluster.yml
 
-# Install Ingress Controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+echo "🔖 Labeling and tainting nodes..."
+
+# Get worker nodes
+MYSQL_NODE=$(kubectl get nodes -o name | grep worker | sed -n 1p | cut -d'/' -f2)
+TODOAPP_NODE_1=$(kubectl get nodes -o name | grep worker | sed -n 2p | cut -d'/' -f2)
+TODOAPP_NODE_2=$(kubectl get nodes -o name | grep worker | sed -n 3p | cut -d'/' -f2)
+
+# Label and taint mysql node
+kubectl label node "$MYSQL_NODE" app=mysql --overwrite
+kubectl taint node "$MYSQL_NODE" app=mysql:NoSchedule --overwrite
+
+# Label todoapp nodes
+kubectl label node "$TODOAPP_NODE_1" app=todoapp --overwrite
+kubectl label node "$TODOAPP_NODE_2" app=todoapp --overwrite
+
+echo "🚀 Deploying MySQL StatefulSet..."
+kubectl apply -f statefulset.yml
+
+echo "🚀 Deploying ToDoApp Deployment..."
+kubectl apply -f deployment.yml
+
+echo "⏳ Waiting for rollouts..."
+kubectl rollout status statefulset/mysql
+kubectl rollout status deployment/todoapp
+
+echo "✅ Everything deployed successfully!"
