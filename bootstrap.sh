@@ -1,4 +1,11 @@
 #!/bin/bash
+
+kind delete cluster
+kind create cluster --config cluster.yml 
+
+kubectl taint nodes kind-worker kind-worker2 app=mysql:NoSchedule
+kubectl get nodes -o jsonpath="{range .items[*]}{.metadata.name} {.spec.taints[]}{\"\n\"}"
+
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml
