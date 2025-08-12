@@ -1,20 +1,18 @@
 #!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
+set -e
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+echo "[bootstrap] 🚀 Creating Kubernetes cluster..."
+kind create cluster --config infrastructure/cluster.yml
 
-# Install Ingress Controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+echo "[bootstrap] 🏷️ Labeling and tainting nodes..."
+kubectl label nodes kind-worker app=mysql --overwrite
+kubectl label nodes kind-worker2 app=todoapp --overwrite
+kubectl taint nodes kind-worker app=mysql:NoSchedule --overwrite
+
+echo "[bootstrap] 📦 Deploying MySQL StatefulSet..."
+kubectl apply -f infrastructure/statefulset-mysql.yml
+
+echo "[bootstrap] 📦 Deploying ToDo App..."
+kubectl apply -f infrastructure/deployment-todoapp.yml
+
+echo "[bootstrap] ✅ Deployment completed!"
