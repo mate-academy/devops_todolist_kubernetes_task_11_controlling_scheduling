@@ -1,4 +1,10 @@
 #!/bin/bash
+kind create cluster --config cluster.yml
+
+for node in $(kubectl get nodes -l app=mysql -o name); do
+    kubectl taint $node app=mysql:NoSchedule --overwrite
+done
+
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml
