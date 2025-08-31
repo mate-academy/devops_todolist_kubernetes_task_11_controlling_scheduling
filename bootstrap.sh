@@ -9,6 +9,23 @@ kubectl wait --for=condition=Ready nodes --all --timeout=300s
 echo "=== Проверка нод и их лейблов ==="
 kubectl get nodes --show-labels
 
+echo "=== Добавление лейблов на worker ноды ==="
+# Получаем имена worker нод
+WORKER_NODES=($(kubectl get nodes --no-headers | grep -v control-plane | awk '{print $1}'))
+
+# Лейблим первые 2 ноды как MySQL
+kubectl label node ${WORKER_NODES[0]} app=mysql --overwrite
+kubectl label node ${WORKER_NODES[1]} app=mysql --overwrite
+
+# Лейблим остальные 4 ноды как TodoApp
+kubectl label node ${WORKER_NODES[2]} app=todoapp --overwrite
+kubectl label node ${WORKER_NODES[3]} app=todoapp --overwrite
+kubectl label node ${WORKER_NODES[4]} app=todoapp --overwrite
+kubectl label node ${WORKER_NODES[5]} app=todoapp --overwrite
+
+echo "=== Проверка лейблов после применения ==="
+kubectl get nodes --show-labels
+
 echo "=== Добавление taint на ноды с app=mysql ==="
 # Получаем имена нод с лейблом app=mysql и добавляем taint
 kubectl get nodes -l app=mysql -o jsonpath='{.items[*].metadata.name}' | xargs -I {} kubectl taint node {} app=mysql:NoSchedule

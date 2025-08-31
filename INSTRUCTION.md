@@ -32,6 +32,7 @@ kubectl get nodes --show-labels
 
 - 1 control-plane нода
 - 6 worker нод: 2 с лейблом `app=mysql`, 4 с лейблом `app=todoapp`
+- Лейблы должны быть применены автоматически скриптом bootstrap.sh
 
 ### 3. Проверка Taints
 
@@ -98,7 +99,20 @@ curl http://localhost:30007
 
 - ✅ Приложение доступно по адресу http://localhost:30007
 
-### 7. Детальная валидация Scheduling
+### 7. Проверка правильности лейблинга нод
+
+```bash
+# Проверить количество нод с каждым лейблом
+echo "=== MySQL ноды ==="
+kubectl get nodes -l app=mysql
+
+echo "=== TodoApp ноды ==="  
+kubectl get nodes -l app=todoapp
+
+# Должно быть: 2 MySQL ноды и 4 TodoApp ноды
+```
+
+### 8. Детальная валидация Scheduling
 
 ```bash
 # Проверить события планировщика
@@ -112,7 +126,7 @@ echo "=== Размещение ToDo подов ==="
 kubectl get pods -l app=todoapp -o custom-columns=NAME:.metadata.name,NODE:.spec.nodeName,STATUS:.status.phase
 ```
 
-### 8. Проверка Anti-Affinity правил
+### 9. Проверка Anti-Affinity правил
 
 ```bash
 # Проверить, что MySQL поды не на одной ноде
@@ -122,7 +136,7 @@ kubectl get pods -l app=mysql -o jsonpath='{range .items[*]}{.metadata.name}{"\t
 kubectl get pods -l app=todoapp -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.nodeName}{"\n"}{end}'
 ```
 
-### 9. Очистка ресурсов
+### 10. Очистка ресурсов
 
 ```bash
 # Удалить кластер после тестирования
