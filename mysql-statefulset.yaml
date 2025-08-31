@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-statefulset
+  labels:
+    app: mysql
+spec:
+  serviceName: mysql-service
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      # TOLERATIONS: Позволяет подам работать на нодах с taint app=mysql:NoSchedule
+      tolerations:
+        - key: "app"
+          operator: "Equal"
+          value: "mysql"
+          effect: "NoSchedule"
+
+      # NODE AFFINITY: Гарантирует размещение только на нодах с лейблом app=mysql
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values: ["mysql"]
+
+        # POD ANTI-AFFINITY: MySQL поды не на одной ноде
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values: ["mysql"]
+              topologyKey: "kubernetes.io/hostname"
+
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+              name: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "rootpassword"
+            - name: MYSQL_DATABASE
+              value: "todolist"
+            - name: MYSQL_USER
+              value: "todouser"
+            - name: MYSQL_PASSWORD
+              value: "todopassword"
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  labels:
+    app: mysql
+spec:
+  selector:
+    app: mysql
+  ports:
+    - port: 3306
+      targetPort: 3306
+  type: ClusterIP

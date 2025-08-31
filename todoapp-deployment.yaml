@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todoapp-deployment
+  labels:
+    app: todoapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: todoapp
+  template:
+    metadata:
+      labels:
+        app: todoapp
+    spec:
+      # NODE AFFINITY: Предпочтительное размещение на нодах с app=todoapp
+      # Используем PreferredDuringSchedulingIgnoredDuringExecution как требуется
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values: ["todoapp"]
+
+        # POD ANTI-AFFINITY: ToDo поды не на одной ноде
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values: ["todoapp"]
+              topologyKey: "kubernetes.io/hostname"
+
+      containers:
+        - name: todoapp
+          image: todoapp:latest
+          imagePullPolicy: Never # Для kind кластера
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: DATABASE_HOST
+              value: "mysql-service"
+            - name: DATABASE_NAME
+              value: "todolist"
+            - name: DATABASE_USER
+              value: "todouser"
+            - name: DATABASE_PASSWORD
+              value: "todopassword"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todoapp-service
+  labels:
+    app: todoapp
+spec:
+  selector:
+    app: todoapp
+  ports:
+    - port: 80
+      targetPort: 8080
+      nodePort: 30007
+  type: NodePort

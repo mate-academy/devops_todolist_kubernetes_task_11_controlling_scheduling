@@ -1,20 +1,49 @@
 #!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+echo "=== Создание kind кластера ==="
+kind create cluster --config=cluster.yml
 
-# Install Ingress Controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+echo "=== Ожидание готовности кластера ==="
+kubectl wait --for=condition=Ready nodes --all --timeout=300s
+
+echo "=== Проверка нод и их лейблов ==="
+kubectl get nodes --show-labels
+
+echo "=== Добавление taint на ноды с app=mysql ==="
+# Получаем имена нод с лейблом app=mysql и добавляем taint
+kubectl get nodes -l app=mysql -o jsonpath='{.items[*].metadata.name}' | xargs -I {} kubectl taint node {} app=mysql:NoSchedule
+
+echo "=== Проверка taint ==="
+kubectl describe nodes | grep -A 5 -B 5 Taints
+
+echo "=== Сборка Docker образа для ToDo приложения ==="
+cd src
+docker build -t todoapp:latest .
+cd ..
+
+echo "=== Загрузка образа в kind кластер ==="
+kind load docker-image todoapp:latest
+
+echo "=== Развертывание MySQL StatefulSet ==="
+kubectl apply -f mysql-statefulset.yaml
+
+echo "=== Ожидание готовности MySQL ==="
+kubectl wait --for=condition=Ready pod -l app=mysql --timeout=300s
+
+echo "=== Развертывание ToDo приложения ==="
+kubectl apply -f todoapp-deployment.yaml
+
+echo "=== Ожидание готовности ToDo приложения ==="
+kubectl wait --for=condition=Ready pod -l app=todoapp --timeout=300s
+
+echo "=== Проверка размещения подов ==="
+echo "MySQL поды:"
+kubectl get pods -l app=mysql -o wide
+
+echo "ToDo поды:"
+kubectl get pods -l app=todoapp -o wide
+
+echo "=== Проверка сервисов ==="
+kubectl get services
+
+echo "=== Готово! Приложение доступно на http://localhost:30007 ==="
