@@ -1,7 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: app-config
-  namespace: todoapp
+  name: mysql-init-sql
+  namespace: mysql
 data:
-  PYTHONUNBUFFERED: "1"
+  init.sql: |
+    CREATE DATABASE IF NOT EXISTS todo;
+    GRANT ALL PRIVILEGES ON todo.* TO 'appuser'@'%' IDENTIFIED BY 'apppass';
+    FLUSH PRIVILEGES;
