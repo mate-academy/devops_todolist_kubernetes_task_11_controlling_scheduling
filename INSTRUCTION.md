@@ -1,6 +1,5 @@
 ## Before validation, create cluster and apply all infrastructure manifests:
 ```shell
-    kind create cluster --config cluster.yml
     ./bootstrap.sh
 ```
 
