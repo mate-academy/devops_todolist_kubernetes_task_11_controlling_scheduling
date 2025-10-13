@@ -67,6 +67,7 @@ spec:
       tolerations:
         - key: app
           value: mysql
+          operator: Equal
           effect: NoSchedule
       affinity:
         podAntiAffinity:
