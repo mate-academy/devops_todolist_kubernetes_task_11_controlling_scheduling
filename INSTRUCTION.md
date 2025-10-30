@@ -1,5 +1,50 @@
 # Kubernetes Scheduling Control Instructions
 
+
+## Initial setup — create kind cluster and run bootstrap
+
+Before running the validation steps, create a local kind cluster with multiple worker nodes and run the repository bootstrap script:
+
+1. Prereqs: Docker running, kind and kubectl installed. Quick checks:
+```bash
+docker --version
+kind --version
+kubectl version --client
+```
+
+2. Create a kind config (example with 2 workers). Save as kind-config.yaml:
+```yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+    - role: control-plane
+    - role: worker
+    - role: worker
+```
+
+3. Create the cluster:
+```bash
+kind create cluster --name devops-task --config kind-config.yaml
+```
+
+4. Ensure kubectl uses the new cluster:
+```bash
+kubectl cluster-info --context kind-devops-task
+kubectl get nodes
+```
+
+5. Run the repository bootstrap script from the project root:
+```bash
+chmod +x bootstrap.sh
+./bootstrap.sh
+```
+
+6. Verify the bootstrap deployed resources:
+```bash
+kubectl get pods -A
+```
+
+
 ## Prerequisites
 - Kubernetes cluster with multiple worker nodes
 - `kubectl` command-line tool
@@ -70,7 +115,7 @@ Modify the Deployment YAML to include:
 affinity:
     nodeAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 1
+        - weight: 100
             preference:
                 matchExpressions:
                 - key: app
