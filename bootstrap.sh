@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# 0) Кластер
-kind create cluster --config ./.infrastructure/cluster.yml || true
 
 # 1) Namespaces
 kubectl apply -f ./.infrastructure/mysql/ns.yml
@@ -25,7 +23,7 @@ kubectl -n mysql rollout status sts/mysql --timeout=180s
 kubectl apply -f ./.infrastructure/app/secret.yml
 kubectl apply -f ./.infrastructure/app/deployment.yml
 kubectl apply -f ./.infrastructure/app/service.yml
-kubectl -n todo rollout status deploy/todo-app --timeout=180s
+kubectl -n todo todoapp status deploy/todoapp --timeout=180s
 
 # 5) Вивід для перевірки
 echo "[Nodes labels/taints]"

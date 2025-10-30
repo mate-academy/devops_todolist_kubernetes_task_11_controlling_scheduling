@@ -24,7 +24,7 @@ nodes:
 
 3. Create the cluster:
 ```bash
-kind create cluster --name devops-task --config kind-config.yaml
+kind create cluster --name devops-task --config ./.infrastructure/cluster.yml
 ```
 
 4. Ensure kubectl uses the new cluster:
