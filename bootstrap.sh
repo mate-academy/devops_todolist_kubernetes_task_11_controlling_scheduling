@@ -1,4 +1,9 @@
 #!/bin/bash
+# Select all nodes with label app=mysql and apply the taint
+for node in $(kubectl get nodes -l app=mysql -o jsonpath='{.items[*].metadata.name}'); do
+  kubectl taint nodes "$node" app=mysql:NoSchedule --overwrite
+done
+
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml
