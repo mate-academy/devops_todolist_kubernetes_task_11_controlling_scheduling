@@ -4,6 +4,7 @@ metadata:
   name: todoapp
   namespace: todoapp
 spec:
+  replicas: 2
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -17,6 +18,27 @@ spec:
       labels:
         app: todoapp
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - todoapp
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - todoapp
+            topologyKey: "kubernetes.io/hostname" # Разделять по имени хоста (ноды)
+      # -------------------------------------------------------
+
       containers:
       - name: todoapp
         image: ikulyk404/todoapp:4.0.1
