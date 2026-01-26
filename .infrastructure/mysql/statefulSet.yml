@@ -15,14 +15,14 @@ spec:
         app: mysql
     spec:
       tolerations:
-      - key: "node-role.kubernetes.io/worker"
-        operator: "Exists"
-        value: "kube2py"
+      - key: "app"
+        operator: "Equal"
+        value: "mysql"
         effect: "NoSchedule"
 
       affinity:
         nodeAffinity:
-          PreferedDuringSchedulingIgnoredDuringExecution:
+          requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
               - key: app
@@ -31,7 +31,7 @@ spec:
                 - mysql
 
         podAntiAffinity:
-          PreferedDuringSchedulingIgnoredDuringExecution:
+          requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchLabels:
                 app: mysql

@@ -44,14 +44,30 @@ Ensure all replicas are **READY**.
 
 ## 4. Validate Pod scheduling rules
 
-### Check Node Affinity
+### Check node labels
+
+```sh
+kubectl get nodes --show-labels
+```
+
+Ensure nodes have the required labels (e.g. `app=todoapp`, `app=mysql`).
+
+### Check node taints
+
+```sh
+kubectl describe node <node-name> | grep Taints
+```
+
+Ensure taints match the tolerations defined in the manifests.
+
+### Check pod scheduling result
 
 ```sh
 kubectl get pods -o wide -n todoapp
 kubectl get pods -o wide -n mysql
 ```
 
-Verify pods are scheduled on nodes with required labels.
+Verify pods are scheduled on expected nodes.
 
 ### Check Pod Anti-Affinity
 
