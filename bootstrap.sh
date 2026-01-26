@@ -18,3 +18,27 @@ kubectl apply -f .infrastructure/app/deployment.yml
 # Install Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 # kubectl apply -f .infrastructure/ingress/ingress.yml
+
+set -e
+
+# Namespaces
+kubectl apply -f namespaces/
+
+# ConfigMaps and Secrets
+kubectl apply -f configmaps/
+kubectl apply -f secrets/
+
+# Storage
+kubectl apply -f storage/
+
+# MySQL
+kubectl apply -f mysql/
+
+# Application
+kubectl apply -f deployment/
+kubectl apply -f service/
+
+# Autoscaling
+kubectl apply -f hpa/
+
+echo "Deployment completed successfully"
