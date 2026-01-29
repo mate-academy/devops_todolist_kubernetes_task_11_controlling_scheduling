@@ -9,24 +9,18 @@ kubeadmConfigPatches:
   kind: KubeletConfiguration
   evictionHard:
     nodefs.available: "0%"
-# patch it further using a JSON 6902 patch
-kubeadmConfigPatchesJSON6902:
-- group: kubeadm.k8s.io
-  version: v1beta3
-  kind: ClusterConfiguration
-  patch: |
-    - op: add
-      path: /apiServer/certSANs/-
-      value: my-hostname
+# NOTE: removed deprecated kubeadm v1beta3 JSON6902 patch to avoid kubeadm API warnings
 # 2 control plane node and 2 workers
 nodes:
 # the control plane node config
 - role: control-plane
+  image: kindest/node:v1.34.3
   extraMounts:
     - hostPath: /tmp
       containerPath: /data
   kubeadmConfigPatches:
   - |
+    apiVersion: kubeadm.k8s.io/v1beta3
     kind: InitConfiguration
     nodeRegistration:
       kubeletExtraArgs:
@@ -44,36 +38,42 @@ nodes:
     protocol: TCP
 # the two workers
 - role: worker
+  image: kindest/node:v1.34.3
   extraMounts:
     - hostPath: /tmp
       containerPath: /data
   labels:
     app: mysql
 - role: worker
+  image: kindest/node:v1.34.3
   extraMounts:
     - hostPath: /tmp
       containerPath: /data
   labels:
     app: mysql
 - role: worker
+  image: kindest/node:v1.34.3
   extraMounts:
     - hostPath: /tmp
       containerPath: /data
   labels:
     app: todoapp
 - role: worker
+  image: kindest/node:v1.34.3
   extraMounts:
     - hostPath: /tmp
       containerPath: /data
   labels:
     app: todoapp
 - role: worker
+  image: kindest/node:v1.34.3
   extraMounts:
     - hostPath: /tmp
       containerPath: /data
   labels:
     app: todoapp
 - role: worker
+  image: kindest/node:v1.34.3
   extraMounts:
     - hostPath: /tmp
       containerPath: /data
