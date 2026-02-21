@@ -1,4 +1,15 @@
 #!/bin/bash
+set -e
+kind create cluster --config cluster.yml
+echo "Waiting for Kubernetes API..."
+until kubectl cluster-info >/dev/null 2>&1; do
+  echo "Cluster is not ready yet..."
+  sleep 5
+done
+echo "Kubernetes API is available!"
+
+kubectl get nodes -l app=mysql -o name | xargs -r kubectl taint nodes app=mysql:NoSchedule
+
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml
