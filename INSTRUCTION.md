@@ -47,7 +47,7 @@ Expected: nodes labeled `app=mysql` and `app=todoapp` are visible.
 Apply `NoSchedule` taint to all nodes labeled `app=mysql`:
 
 ```bash
-kubectl taint nodes <nodes> app=mysql:NoSchedule
+kubectl taint nodes -l app=mysql app=mysql:NoSchedule
 ```
 
 Verify the taint was applied:
