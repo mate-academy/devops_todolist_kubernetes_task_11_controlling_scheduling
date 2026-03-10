@@ -8,7 +8,7 @@ The infrastructure is designed for a multi-node **kind** cluster consisting of o
 
 ### 1. MySQL Backend (StatefulSet)
 
-* **Replicas**: 3 pods (as per the "rule of three" for quorum).
+* **Replicas**: 2 pods (as per the "rule of three" for quorum).
 * **Isolation**: Hosted on dedicated nodes (`worker2`, `worker3`) using **Taints** (`NoSchedule`) and **Tolerations**.
 * **Affinity**:
 * **Node Affinity (Required)**: Ensures pods only land on nodes labeled `app=mysql`.
