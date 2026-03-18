@@ -1,4 +1,9 @@
 #!/bin/bash
+set -euo pipefail
+
+# Taint mysql nodes so only mysql pods (with tolerations) can be scheduled there.
+kubectl taint nodes -l app=mysql app=mysql:NoSchedule --overwrite
+
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml
