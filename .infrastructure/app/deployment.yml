@@ -17,6 +17,25 @@ spec:
       labels:
         app: todoapp
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: "kubernetes.io/hostname"
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: "In"
+                    values:
+                      - todoapp
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                  - key: app
+                    operator: "In"
+                    values:
+                      - todoapp
+              weight: 100
       containers:
       - name: todoapp
         image: ikulyk404/todoapp:4.0.1
