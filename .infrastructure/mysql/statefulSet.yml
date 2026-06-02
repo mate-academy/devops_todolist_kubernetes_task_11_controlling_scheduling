@@ -21,7 +21,7 @@ spec:
         effect: "NoSchedule"
       affinity:
         nodeAffinity:
-          requiredDuringSchedulingIgnoredDiringExecution:
+          requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
           - matchExpressions:
             - key: app
@@ -35,7 +35,7 @@ spec:
                 operator: In
                 values:
                 - mysql
-            todologyKey: "kubernetes.io/hostname"
+            topologyKey: "kubernetes.io/hostname"
       containers:
       - name: mysql
         image: mysql:8.0
