@@ -1,7 +1,7 @@
 #!/bin/bash
 
 kind create cluster --name todo-cluster --config cluster.yml
-kubectl taint nodes todo-cluster-worker todo-cluster-worker2 app=mysql:NoSchedul
+kubectl taint nodes todo-cluster-worker todo-cluster-worker2 app=mysql:NoSchedule
 kubectl taint nodes -l app=mysql app=mysql:NoSchedule
 
 kubectl apply -f .infrastructure/mysql/ns.yml
