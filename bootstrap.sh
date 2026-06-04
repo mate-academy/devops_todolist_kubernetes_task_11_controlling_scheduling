@@ -1,4 +1,10 @@
 #!/bin/bash
+
+kubectl label nodes kind-worker app=mysql
+kubectl label nodes kind-worker2 app=todoapp
+kubectl taint nodes kind-worker app=mysql:NoSchedule
+
+
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml
