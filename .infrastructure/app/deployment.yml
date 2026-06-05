@@ -82,7 +82,10 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 5
       tolerations:
-        - operator: "Exists"
+        - key: "app"
+          operator: "Equal"
+          value: "mysql"
+          effect: "NoSchedule"
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
