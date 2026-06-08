@@ -1,4 +1,7 @@
 #!/bin/bash
+kind create cluster --config .infrastructure/app/cluster.yml
+kubectl taint nodes kind-worker app=mysql:NoSchedule
+kubectl taint nodes kind-worker2 app=mysql:NoSchedule
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml
