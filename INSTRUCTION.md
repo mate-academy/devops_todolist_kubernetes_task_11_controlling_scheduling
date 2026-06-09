@@ -8,7 +8,10 @@
 
 ## 1. Create the cluster and deploy resources
 
+Ensure `cluster.yml` exists in the repository root and `bootstrap.sh` is executable:
+
 ```bash
+test -f cluster.yml
 chmod +x bootstrap.sh
 ./bootstrap.sh
 ```
@@ -37,6 +40,7 @@ Expected labels:
 Check taints on MySQL nodes:
 
 ```bash
+kubectl get nodes -o json | jq '.items[].spec.taints'
 kubectl describe nodes -l app=mysql | grep -A2 Taints
 ```
 

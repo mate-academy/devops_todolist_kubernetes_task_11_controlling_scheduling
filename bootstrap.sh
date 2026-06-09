@@ -1,7 +1,20 @@
 #!/bin/bash
-set -e
+set -euo pipefail
+
+if [ ! -f cluster.yml ]; then
+  echo "cluster.yml is required but was not found in the repository root"
+  exit 1
+fi
 
 kind create cluster --config cluster.yml --name todoapp
+
+kubectl wait --for=condition=Ready nodes --all --timeout=180s
+
+kubectl label node todoapp-worker app=mysql --overwrite
+kubectl label node todoapp-worker2 app=mysql --overwrite
+kubectl label node todoapp-worker3 app=todoapp --overwrite
+kubectl label node todoapp-worker4 app=todoapp --overwrite
+kubectl label node todoapp-worker5 app=todoapp --overwrite
 
 kubectl taint nodes -l app=mysql app=mysql:NoSchedule --overwrite
 

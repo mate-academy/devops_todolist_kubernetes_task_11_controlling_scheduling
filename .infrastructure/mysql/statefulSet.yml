@@ -15,25 +15,28 @@ spec:
         app: mysql
     spec:
       tolerations:
-      - key: app
-        operator: Equal
-        value: mysql
-        effect: NoSchedule
+      - key: "app"
+        operator: "Equal"
+        value: "mysql"
+        effect: "NoSchedule"
       affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: "kubernetes.io/hostname"
+            labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - "mysql"
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: app
+              - key: "app"
                 operator: In
                 values:
-                - mysql
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchLabels:
-                app: mysql
-            topologyKey: kubernetes.io/hostname
+                - "mysql"
       containers:
       - name: mysql
         image: mysql:8.0
