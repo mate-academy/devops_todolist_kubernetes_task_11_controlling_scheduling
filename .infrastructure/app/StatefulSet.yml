@@ -14,6 +14,7 @@ spec:
       labels:
         app: mysql
     spec:
+      # Allows scheduling on nodes tainted app=mysql:NoSchedule
       tolerations:
       - key: app
         operator: Equal
@@ -21,6 +22,7 @@ spec:
         effect: NoSchedule
 
       affinity:
+        # Requires node with label app=mysql
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -30,6 +32,7 @@ spec:
                 values:
                 - mysql
 
+        # Prevents two MySQL pods from landing on the same node
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -46,7 +49,6 @@ spec:
         ports:
         - containerPort: 3306
           name: mysql
-
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
@@ -65,7 +67,6 @@ spec:
               key: mysql-password
         - name: MYSQL_DATABASE
           value: "todoapp"
-
         livenessProbe:
           exec:
             command:
@@ -74,7 +75,6 @@ spec:
             - mysqladmin ping -h localhost
           initialDelaySeconds: 30
           periodSeconds: 10
-
         readinessProbe:
           exec:
             command:
@@ -83,7 +83,6 @@ spec:
             - mysqladmin ping -h localhost
           initialDelaySeconds: 20
           periodSeconds: 5
-
         resources:
           requests:
             memory: "256Mi"
@@ -91,7 +90,6 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
-
         volumeMounts:
         - name: mysql-storage
           mountPath: /var/lib/mysql
