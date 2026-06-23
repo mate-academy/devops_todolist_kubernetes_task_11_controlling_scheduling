@@ -1,0 +1,80 @@
+# INSTRUCTION.md
+
+## 1. Create the cluster
+
+```bash
+kind create cluster --config cluster.yml
+```
+
+## 2. Inspect nodes — check labels and taints
+
+```bash
+kubectl get nodes --show-labels
+kubectl describe nodes | grep -A3 Taints
+```
+
+## 3. Taint MySQL nodes
+
+```bash
+# List mysql nodes
+kubectl get nodes -l app=mysql
+
+# Taint each one (replace <node-name> with actual name from above)
+kubectl taint nodes <node-name> app=mysql:NoSchedule
+
+# Verify
+kubectl describe nodes -l app=mysql | grep Taints
+# Expected: Taints: app=mysql:NoSchedule
+```
+
+## 4. Apply all manifests
+
+```bash
+./bootstrap.sh
+```
+
+Or manually in order:
+
+```bash
+kubectl apply -f .infrastructure/mysql/ns.yml
+kubectl apply -f .infrastructure/mysql/configMap.yml
+kubectl apply -f .infrastructure/mysql/secret.yml
+kubectl apply -f .infrastructure/mysql/service.yml
+kubectl apply -f .infrastructure/mysql/StatefulSet.yml
+
+kubectl apply -f .infrastructure/app/ns.yml
+kubectl apply -f .infrastructure/app/pv.yml
+kubectl apply -f .infrastructure/app/pvc.yml
+kubectl apply -f .infrastructure/app/secret.yml
+kubectl apply -f .infrastructure/app/configMap.yml
+kubectl apply -f .infrastructure/app/clusterIp.yml
+kubectl apply -f .infrastructure/app/nodeport.yml
+kubectl apply -f .infrastructure/app/hpa.yml
+kubectl apply -f .infrastructure/app/deployment.yml
+kubectl apply -f .infrastructure/app/pod.yml
+```
+
+## 5. Verify pod placement
+
+```bash
+# All pods across namespaces
+kubectl get pods -A -o wide
+
+# MySQL pods must be on app=mysql nodes only
+kubectl get pods -n mysql -o wide
+
+# App pods must be on app=todoapp nodes only
+kubectl get pods -n app -o wide
+```
+
+## 6. Verify anti-affinity (no two same-app pods on the same node)
+
+```bash
+# No duplicate nodes for MySQL
+kubectl get pods -n mysql -o wide | awk 'NR>1{print $7}' | sort | uniq -d
+# Expected: empty
+
+# No duplicate nodes for app
+kubectl get pods -n app -o wide | awk 'NR>1{print $7}' | sort | uniq -d
+# Expected: empty
+```
