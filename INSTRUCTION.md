@@ -17,6 +17,10 @@ kubectl describe nodes -l app=mysql | grep -A5 Taints
 
 Expected: nodes with `app=mysql` label have taint `app=mysql:NoSchedule`
 
+### Validate Pod scheduling
+
+kubectl get pod todoapp-pod -n todoapp -o wide
+
 ### 2. MySQL pods scheduled only on mysql nodes
 
 ```bash
