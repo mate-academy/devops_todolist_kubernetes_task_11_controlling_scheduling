@@ -1,4 +1,14 @@
 #!/bin/bash
+set -e
+
+kind create cluster --config cluster.yml
+
+# Taint mysql nodes
+kubectl taint nodes -l app=mysql app=mysql:NoSchedule
+
+kubectl create namespace todoapp
+kubectl create namespace mysql
+
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml
@@ -13,6 +23,7 @@ kubectl apply -f .infrastructure/app/configMap.yml
 kubectl apply -f .infrastructure/app/clusterIp.yml
 kubectl apply -f .infrastructure/app/nodeport.yml
 kubectl apply -f .infrastructure/app/hpa.yml
+kubectl apply -f .infrastructure/app/pod.yml
 kubectl apply -f .infrastructure/app/deployment.yml
 
 # Install Ingress Controller
