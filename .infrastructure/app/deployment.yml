@@ -15,7 +15,6 @@ spec:
     spec:
 
       affinity:
-        
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 100
