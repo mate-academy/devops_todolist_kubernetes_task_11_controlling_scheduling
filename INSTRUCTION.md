@@ -8,9 +8,13 @@ chmod +x bootstrap.sh
 ./bootstrap.sh
 ```
 
-## Note
+## Project resources
 
-The ToDo application is deployed using a Kubernetes **Deployment**, which creates and manages the application Pods. No standalone Pod manifest is provided.
+The project contains the following manifests:
+
+- `todoapp-pod-1.yml` – standalone Pod manifest for the ToDo application (required by the assignment).
+- `todoapp-deployment.yml` – Deployment used to demonstrate node affinity and pod anti-affinity.
+- `mysql-statefulset.yml` – StatefulSet with tolerations, required node affinity and pod anti-affinity.
 
 ## Validate the deployment
 
@@ -40,8 +44,8 @@ kubectl get statefulset -A
 Ensure that:
 
 - MySQL Pods are scheduled only on nodes labeled `app=mysql`.
-- ToDo application Pods are scheduled on nodes labeled `app=todoapp`.
-- Replicas of both workloads are running on different nodes (Pod Anti-Affinity).
+- ToDo Deployment Pods are scheduled on nodes labeled `app=todoapp`.
+- Pod Anti-Affinity distributes replicas across different nodes.
 
 Verify pod placement:
 
@@ -51,15 +55,15 @@ kubectl get pods -A -o wide
 
 ## Access the ToDo application
 
-The application is exposed through the **NGINX Ingress Controller** installed by `bootstrap.sh`.
+The application is exposed through the NGINX Ingress Controller installed by `bootstrap.sh`.
 
-Get the Ingress resource:
+Check the Ingress resource:
 
 ```bash
 kubectl get ingress -A
 ```
 
-If Ingress is not accessible in your environment, use port forwarding instead:
+If Ingress is unavailable, use port forwarding:
 
 ```bash
 kubectl port-forward -n todoapp svc/todoapp 8080:80
