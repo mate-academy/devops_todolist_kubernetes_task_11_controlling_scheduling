@@ -18,7 +18,7 @@ kubeadmConfigPatchesJSON6902:
     - op: add
       path: /apiServer/certSANs/-
       value: my-hostname
-# 2 control plane node and 2 workers
+# 1 control plane node and 2 workers
 nodes:
 # the control plane node config
 - role: control-plane
@@ -42,38 +42,25 @@ nodes:
   - containerPort: 443
     hostPort: 443
     protocol: TCP
-# the two workers
+# worker dedicated to MySQL - labeled app=mysql (taint is applied later via bootstrap.sh)
 - role: worker
   extraMounts:
     - hostPath: /tmp
       containerPath: /data
-  labels:
-    app: mysql
+  kubeadmConfigPatches:
+  - |
+    kind: JoinConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "app=mysql"
+# worker dedicated to the ToDo app - labeled app=todoapp
 - role: worker
   extraMounts:
     - hostPath: /tmp
       containerPath: /data
-  labels:
-    app: mysql
-- role: worker
-  extraMounts:
-    - hostPath: /tmp
-      containerPath: /data
-  labels:
-    app: todoapp
-- role: worker
-  extraMounts:
-    - hostPath: /tmp
-      containerPath: /data
-  labels:
-    app: todoapp
-- role: worker
-  extraMounts:
-    - hostPath: /tmp
-      containerPath: /data
-  labels:
-    app: todoapp
-- role: worker
-  extraMounts:
-    - hostPath: /tmp
-      containerPath: /data
+  kubeadmConfigPatches:
+  - |
+    kind: JoinConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "app=todoapp"
