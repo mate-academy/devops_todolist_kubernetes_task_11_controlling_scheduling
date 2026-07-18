@@ -17,6 +17,27 @@ spec:
       labels:
         app: todoapp
     spec:
+      affinity:
+        # Prefer nodes labeled app=todoapp, but don't require it
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - todoapp
+        # Never co-locate two todoapp pods on the same node
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - todoapp
+            topologyKey: "kubernetes.io/hostname"
       containers:
       - name: todoapp
         image: ikulyk404/todoapp:4.0.1
