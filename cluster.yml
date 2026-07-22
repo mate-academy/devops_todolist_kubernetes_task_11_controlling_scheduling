@@ -42,7 +42,7 @@ nodes:
   - containerPort: 443
     hostPort: 443
     protocol: TCP
-# the two workers
+# the six workers
 - role: worker
   extraMounts:
     - hostPath: /tmp
