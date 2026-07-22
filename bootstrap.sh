@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-kind create cluster --config cluster.yml
+kind create cluster --name todoapp --config cluster.yml
 
 kubectl wait --for=condition=Ready nodes --all --timeout=120s
 
