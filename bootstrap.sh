@@ -3,6 +3,9 @@
 # 1. Створення кластера Kind за конфігом
 kind create cluster --config cluster.yml
 
+# 2. Накладання Taint (пошкодження/забруднення) на ноди з міткою app=mysql
+kubectl taint nodes -l app=mysql app=mysql:NoSchedule
+
 # 2. Застосування ресурсів для MySQL
 kubectl apply -f ./.infrastructure/mysql/ns.yml
 kubectl apply -f ./.infrastructure/mysql/configMap.yml
