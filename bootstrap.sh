@@ -2,7 +2,8 @@
 
 kind create cluster --config cluster.yml
 
-kubectl taint nodes kind-worker kind-worker2 app=mysql:NoSchedule
+kubectl taint nodes kind-worker app=mysql:NoSchedule --overwrite
+kubectl taint nodes kind-worker2 app=mysql:NoSchedule --overwrite
 
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
