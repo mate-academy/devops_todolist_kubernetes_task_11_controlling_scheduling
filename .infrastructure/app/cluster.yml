@@ -49,12 +49,28 @@ nodes:
       containerPath: /data
   labels:
     app: mysql
+  kubeadmConfigPatches:
+    - |
+      kind: JoinConfiguration
+      nodeRegistration:
+        taints:
+        - key: "app"
+          value: "mysql"
+          effect: "NoSchedule"
 - role: worker
   extraMounts:
     - hostPath: /tmp
       containerPath: /data
   labels:
     app: mysql
+  kubeadmConfigPatches:
+    - |
+      kind: JoinConfiguration
+      nodeRegistration:
+        taints:
+        - key: "app"
+          value: "mysql"
+          effect: "NoSchedule"
 - role: worker
   extraMounts:
     - hostPath: /tmp
