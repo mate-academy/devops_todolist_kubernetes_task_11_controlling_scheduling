@@ -28,14 +28,15 @@ spec:
                     operator: In
                     values:
                       - mysql
-      podAntiAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-            - matchExpressions:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+              matchExpressions:
                 - key: "app"
                   operator: In
                   values:
                     - mysql
+              topologyKey: kubernetes.io/hostname
       containers:
       - name: mysql
         image: mysql:8.0

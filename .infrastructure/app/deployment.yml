@@ -35,6 +35,7 @@ spec:
                   operator: In
                   values:
                     - todoapp
+              topologyKey: kubernetes.io/hostname
       containers:
       - name: todoapp
         image: ikulyk404/todoapp:4.0.1
