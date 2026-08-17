@@ -17,6 +17,23 @@ spec:
       labels:
         app: todoapp
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            preference:
+              matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                    - todoapp
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                    - todoapp
       containers:
       - name: todoapp
         image: ikulyk404/todoapp:4.0.1
