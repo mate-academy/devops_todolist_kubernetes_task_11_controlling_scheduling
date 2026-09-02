@@ -1,10 +1,21 @@
 #!/bin/bash
+set -e
+
+# Create kind cluster from cluster.yml
+kind create cluster --name todolist --config cluster.yml
+
+# Taint nodes labeled app=mysql with app=mysql:NoSchedule
+# (Already applied via cluster.yml, but this command can re-apply if needed)
+kubectl taint node -l app=mysql app=mysql:NoSchedule --overwrite
+
+# Apply MySQL namespace and resources
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml
 kubectl apply -f .infrastructure/mysql/service.yml
 kubectl apply -f .infrastructure/mysql/statefulSet.yml
 
+# Apply App namespace and resources
 kubectl apply -f .infrastructure/app/ns.yml
 kubectl apply -f .infrastructure/app/pv.yml
 kubectl apply -f .infrastructure/app/pvc.yml
@@ -18,3 +29,5 @@ kubectl apply -f .infrastructure/app/deployment.yml
 # Install Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 # kubectl apply -f .infrastructure/ingress/ingress.yml
+
+echo "All resources deployed successfully."
