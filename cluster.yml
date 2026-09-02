@@ -18,7 +18,7 @@ kubeadmConfigPatchesJSON6902:
     - op: add
       path: /apiServer/certSANs/-
       value: my-hostname
-# 1 control plane node and 5 workers
+# 1 control plane node and 6 workers
 nodes:
 # the control plane node config
 - role: control-plane
