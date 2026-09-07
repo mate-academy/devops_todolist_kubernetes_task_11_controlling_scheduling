@@ -1,5 +1,11 @@
 ## Deploy the cluster
 
+Run the cluster creation command:
+
+```bash
+kind create cluster --config cluster.yml  
+```
+
 Run the bootstrap script:
 
 ```bash
