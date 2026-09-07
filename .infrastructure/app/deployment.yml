@@ -101,12 +101,12 @@ spec:
                     operator: In
                     values:
                       - todoapp
-      podAntiAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - todoapp
-              topologyKey: kubernetes.io/hostname
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - todoapp
+                topologyKey: kubernetes.io/hostname
