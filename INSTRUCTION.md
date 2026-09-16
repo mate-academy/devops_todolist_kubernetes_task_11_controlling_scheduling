@@ -8,6 +8,7 @@
 
 ```bash
 chmod +x bootstrap.sh
+./bootstrap.sh
 ```
 
 ### Step 1: Verify Cluster Nodes, Labels, and Taints:
