@@ -81,10 +81,28 @@ spec:
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 5
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - todoapp
+              topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - "todoapp"
       volumes:
       - name: data
-        persistentVolumeClaim:
-          claimName: pvc-data
+        emptyDir: {}
       - name: app-secrets-volume
         secret:
           secretName: app-secret
