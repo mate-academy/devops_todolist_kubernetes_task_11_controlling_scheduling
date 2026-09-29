@@ -5,6 +5,7 @@ kubectl apply -f .infrastructure/mysql/secret.yml
 kubectl apply -f .infrastructure/mysql/service.yml
 kubectl apply -f .infrastructure/mysql/statefulSet.yml
 
+kind create cluster --config cluster.yml
 kubectl apply -f .infrastructure/app/ns.yml
 kubectl apply -f .infrastructure/app/pv.yml
 kubectl apply -f .infrastructure/app/pvc.yml
@@ -14,6 +15,7 @@ kubectl apply -f .infrastructure/app/clusterIp.yml
 kubectl apply -f .infrastructure/app/nodeport.yml
 kubectl apply -f .infrastructure/app/hpa.yml
 kubectl apply -f .infrastructure/app/deployment.yml
+kubectl get nodes -l app=mysql -o name | xargs -I{} kubectl taint nodes {} app=mysql:NoSchedule
 
 # Install Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
