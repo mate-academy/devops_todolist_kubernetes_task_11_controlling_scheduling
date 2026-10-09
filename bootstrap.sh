@@ -1,20 +1,24 @@
 #!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+echo "Spinning up Kind cluster from cluster.yml..."
+kind create cluster --config cluster.yml
 
-# Install Ingress Controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+echo "Applying Taints to mysql nodes..."
+kubectl taint nodes -l app=mysql app=mysql:NoSchedule --overwrite
+
+echo "Creating Namespaces..."
+kubectl apply -f .infrastructure/mysql-namespace.yml 2>/dev/null || kubectl create namespace mysql
+kubectl apply -f .infrastructure/namespace.yml 2>/dev/null || kubectl create namespace mateapp
+
+echo "Deploying MySQL Workloads..."
+kubectl apply -f .infrastructure/mysql-secret.yml
+kubectl apply -f .infrastructure/mysql-init-config.yml
+kubectl apply -f .infrastructure/statefulSet.yml
+
+echo "Deploying Application Workloads..."
+kubectl apply -f .infrastructure/configMap.yml
+kubectl apply -f .infrastructure/secret.yml
+kubectl apply -f .infrastructure/app-db-secret.yml
+kubectl apply -f .infrastructure/deployment.yml
+
+echo "All cluster resources applied successfully!"

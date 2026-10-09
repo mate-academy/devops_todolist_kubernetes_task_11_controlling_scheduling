@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todoapp-deployment
+  namespace: mateapp
+  labels:
+    app: todolist
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: todolist
+  template:
+    metadata:
+      labels:
+        app: todolist
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - todoapp
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - todolist
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: todoapp-container
+        image: vitsheo/todoapp:3.0.0
+        ports:
+        - containerPort: 8000
+        env:
+        - name: PYTHONUNBUFFERED
+          valueFrom:
+            configMapKeyRef:
+              name: todoapp-config
+              key: PYTHONUNBUFFERED
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: todoapp-secret
+              key: SECRET_KEY
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: app-db-secret
+              key: NAME
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: app-db-secret
+              key: USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-db-secret
+              key: PASSWORD
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: app-db-secret
+              key: HOST
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
