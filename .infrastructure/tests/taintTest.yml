@@ -1,0 +1,12 @@
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: taint-test
+  spec:
+    nodeSelector:
+      app: mysql
+    containers:
+    - name: test
+      image: busybox
+      command: ["sleep", "3600"]
+
