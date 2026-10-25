@@ -60,6 +60,31 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 2
           timeoutSeconds: 1
+      nodeSelector:
+        app: mysql
+      tolerations:
+      - key: "app"
+        operator: "Equal"
+        value: "mysql"
+        effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoreDuringExecution:
+            nodeSelectorTerms:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values: 
+                    - mysql
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoreDuringExecution:
+            - labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - mysql
+              topologyKey: "kubernetes.io/hostname"
       volumes:
       - name: config-map
         configMap:
