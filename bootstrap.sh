@@ -1,5 +1,6 @@
 #!/bin/bash
-# Taint the nodes labeled app=mysql so only MySQL pods (with a toleration) can run there
+kind create cluster --config cluster.yml
+
 kubectl taint nodes -l app=mysql app=mysql:NoSchedule --overwrite
 
 kubectl apply -f .infrastructure/mysql/ns.yml
