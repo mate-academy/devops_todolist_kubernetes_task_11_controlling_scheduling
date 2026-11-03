@@ -1,4 +1,12 @@
 #!/bin/bash
+set -e
+
+# Spin up the kind cluster
+kind create cluster --config cluster.yml
+
+# Taint the nodes labeled app=mysql so only tolerant pods can be scheduled there
+kubectl taint nodes -l app=mysql app=mysql:NoSchedule --overwrite
+
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml
@@ -18,3 +26,4 @@ kubectl apply -f .infrastructure/app/deployment.yml
 # Install Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 # kubectl apply -f .infrastructure/ingress/ingress.yml
+
