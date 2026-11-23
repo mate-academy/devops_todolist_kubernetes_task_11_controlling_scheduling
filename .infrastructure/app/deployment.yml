@@ -97,19 +97,18 @@ spec:
         value: "todoapp"
         effect: "NoSchedule"
       affinity:
-        podAntiAffinity:
+        nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  app: "todoapp"
-              topologyKey: "kubernetes.io/hostname"
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
+            preference:
+              matchExpressions:
               - key: "app"
                 operator: In
                 values:
                 - "todoapp"
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: "todoapp"
+            topologyKey: "kubernetes.io/hostname"
